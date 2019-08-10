@@ -45,6 +45,7 @@ This package allows multiple calls, in parallel, to a target REST based micro se
 This library supports several options for calling the target REST service:
 * `url`: This is the uri of the target micro service. You can also provide the common parameters (those that don't vary with each API call) in this url. This is a mandatory parameter.
 * `input`: You need to pass the name of the Temporary Spark Table which contains the input parameters set. This is a mandatory parameter too.
+* `dfInput`: You need to pass the name of the Temporary Spark Table which contains the input parameters set. This is a mandatory parameter too.
 * `method`: The supported http/https method. Possible types supported right now are `POST`, and `GET`. Default is `POST`
 * `userId` : The userId in case the target API needs basic authentication.
 * `userPassword` : The password in case the target API needs basic authentication

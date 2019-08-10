@@ -35,19 +35,18 @@ object RestConnectorUtil {
 
 
   def callRestAPI(uri: String,
-                     data: String,
-                     method: String,
-                     oauthCredStr: String,
-                     userCredStr: String,
-                     connStr: String,
-                     contentType: String,
-                     respType: String): Any = {
+                  data: String,
+                  method: String,
+                  oauthCredStr: String,
+                  userCredStr: String,
+                  connStr: String,
+                  contentType: String,
+                  respType: String): Any = {
 
 
     // print("path in callRestAPI : " + uri + " , method : " + method + ", content type : " +
     //  contentType + ", userId : " + userId + ", userPassword : " + userPassword +
     // " , data : " + data + "\n")
-
 
     var httpc = (method: @switch) match {
       case "GET" => Http(addQryParmToUri(uri, data)).header("contenty-type",
@@ -66,7 +65,9 @@ object RestConnectorUtil {
     httpc.option(HttpOptions.allowUnsafeSSL)
 
     if (oauthCredStr == "") {
-      httpc = if (userCredStr == "") httpc else {
+      httpc = if (userCredStr == "") httpc
+              else if (!userCredStr.contains(":")) httpc.headers(Map("Authorization" -> userCredStr))
+              else {
         val usrCred = userCredStr.split(":")
         httpc.auth(usrCred(0), usrCred(1))
       }
@@ -93,7 +94,10 @@ object RestConnectorUtil {
   }
 
   private def addQryParmToUri(uri: String, data: String) : String = {
-      if (uri contains "?") uri + "&" + data else uri + "?" + data
+
+    if (uri contains "?") uri + "&"
+    else if (data contains "/") uri + data
+    else uri + "?" + data
   }
 
   private def convertToQryParm(data: String) : List[(String, String)] = {
@@ -132,7 +136,6 @@ object RestConnectorUtil {
     }
 
     "{" + outArrB.mkString(",") + "}"
-
   }
 
   def prepareTextInput(keys: Array[String], values: Array[String]) : String = {
@@ -142,11 +145,14 @@ object RestConnectorUtil {
     val outArrB : ArrayBuffer[String] = new ArrayBuffer[String](keysLength)
 
     while (cnt < keysLength) {
-        outArrB += URLEncoder.encode(keys(cnt)) + "=" + URLEncoder.encode(values(cnt))
-        cnt += 1
+      outArrB +=  (keys(cnt)  match {
+        case "append_endpoint" => values(cnt)
+        case _ => URLEncoder.encode(keys(cnt)) + "=" + URLEncoder.encode(values(cnt))
+      })
+      cnt += 1
     }
-
-    outArrB.mkString("&")
+     val test = outArrB.mkString("&")
+    test
 
   }
 

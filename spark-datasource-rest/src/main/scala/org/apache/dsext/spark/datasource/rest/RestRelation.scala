@@ -114,7 +114,8 @@ case class RESTRelation(
     val inputDataStr = prepareInputData(valuesArr)
 
     val contentType = "application/" + restOptions.postInputFormat
-    val userCred = if (restOptions.userId == "") ""
+    val userCred = if (restOptions.userId == "" && restOptions.userPassword == "") ""
+        else if (restOptions.userId == "" && restOptions.userPassword != "") restOptions.userPassword
         else restOptions.userId + ":" + restOptions.userPassword
     val connectionStr = restOptions.connectionTimeout + ":" + restOptions.readTimeout
     val oauthStr = if (restOptions.oauthConsumerKey == "") "" else {
